@@ -22,33 +22,59 @@ void setup() {
 }
 
 void loop() {
-  
-  void loop() {
-  delay(2000);
+  static unsigned long lastMeasurementTime = 0;
+  if (millis() - lastMeasurementTime > 2000) {
+    lastMeasurementTime = millis();
+    if (WiFi.status() != WL_CONNECTED) {
+      connectToWiFi();
+    }
+    sendSensorData();
+  }
+}
+
+void connectToWiFi() {
+  int retryCount = 0;
+  while (WiFi.status() != WL_CONNECTED && retryCount < 10) {
+    delay(500);
+    Serial.print(".");
+    retryCount++;
+  }
+  if (WiFi.status() == WL_CONNECTED) {
+    Serial.println("Connected to WiFi");
+  } else {
+    Serial.println("Failed to connect to WiFi");
+  }
+}
+
+void sendSensorData() {
+  if (WiFi.status() != WL_CONNECTED) {
+    Serial.println("WiFi is not connected!");
+    return;
+  }
 
   float temperature = dht.readTemperature();
   float humidity = dht.readHumidity();
 
-  if (WiFi.status() == WL_CONNECTED) {
-    HTTPClient http;
-    http.begin(SERVER_URL);
-    http.addHeader("Content-Type", "application/json");
-
-    String postData = "{\"temperature\": " + String(temperature) + ", \"humidity\": " + String(humidity) + "}";
-    int httpResponseCode = http.POST(postData);
-
-    if (httpResponseCode > 0) {
-      String response = http.getString();
-      Serial.println(httpResponseCode);
-      Serial.println(response);
-    } else {
-      Serial.print("Error on sending POST: ");
-      Serial.println(httpResponseCode);
-    }
-    http.end();
-  } else {
-    Serial.println("Error in WiFi connection");
+  if (isnan(temperature) || isnan(humidity)) {
+    Serial.println("Failed to read from DHT sensor!");
+    return;
   }
+
+  HTTPClient http;
+  http.begin(SERVER_URL);
+  http.addHeader("Content-Type", "application/json");
+
+  String postData = "{\"temperature\": " + String(temperature) + ", \"humidity\": " + String(humidity) + "}";
+  int httpResponseCode = http.POST(postData);
+
+  if (httpResponseCode > 0) {
+  String response = http.getString();
+  Serial.println("Response code: " + String(httpResponseCode));
+  Serial.println("Response: " + response);
+} else {
+  Serial.println("Error on sending POST: " + String(httpResponseCode));
+  Serial.println("HTTP error: " + http.errorToString(httpResponseCode));
 }
 
+  http.end();
 }
