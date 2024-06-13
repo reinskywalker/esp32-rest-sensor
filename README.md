@@ -1,5 +1,7 @@
 The Python Flask code snippet you provided sets up a simple web server capable of receiving POST requests containing JSON data, specifically for temperature and humidity values. Here's a detailed breakdown of its components and functionality:
 
+![](https://raw.githubusercontent.com/reinskywalker/esp32-rest-sensor/main/image/image.png)
+
 ### Flask Application Overview
 
 - **Application Setup**: The application is built using Flask, a lightweight WSGI web application framework in Python. It is designed to be quick and easy to get started with, making it an excellent choice for simple web APIs.
