@@ -10,7 +10,7 @@
 #define SERVER_URL "http://127.0.0.1:5000/data"
 
 #define DHTPIN 4
-#define DHTTYPE DHT22
+#define DHTTYPE DHT11
 
 DHT dht(DHTPIN, DHTTYPE);
 
