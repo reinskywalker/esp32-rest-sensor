@@ -6,19 +6,17 @@
 
 #define WIFI_SSID "Wokwi-GUEST"
 #define WIFI_PASSWORD ""
-
 #define SERVER_URL "http://127.0.0.1:5000/data"
 
 #define DHTPIN 4
 #define DHTTYPE DHT11
-
 DHT dht(DHTPIN, DHTTYPE);
 
 void setup() {
   Serial.begin(115200);
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
-  connectToWiFi();
-  dht.begin();
+  connectToWiFi(); 
+  dht.begin();     
 }
 
 void loop() {
@@ -26,7 +24,7 @@ void loop() {
   if (millis() - lastMeasurementTime > 2000) {
     lastMeasurementTime = millis();
     if (WiFi.status() != WL_CONNECTED) {
-      connectToWiFi();
+      connectToWiFi();  
     }
     sendSensorData();
   }
@@ -64,17 +62,16 @@ void sendSensorData() {
   http.begin(SERVER_URL);
   http.addHeader("Content-Type", "application/json");
 
-  String postData = "{\"temperature\": " + String(temperature) + ", \"humidity\": " + String(humidity) + "}";
+  String postData = "{\"temperature\":" + String(temperature, 1) + ",\"humidity\":" + String(humidity, 1) + "}";
   int httpResponseCode = http.POST(postData);
 
   if (httpResponseCode > 0) {
-  String response = http.getString();
-  Serial.println("Response code: " + String(httpResponseCode));
-  Serial.println("Response: " + response);
-} else {
-  Serial.println("Error on sending POST: " + String(httpResponseCode));
-  Serial.println("HTTP error: " + http.errorToString(httpResponseCode));
-}
+    String response = http.getString();
+    Serial.println("HTTP Response code: " + String(httpResponseCode));
+    Serial.println("Server response: " + response);
+  } else {
+    Serial.println("Error on sending POST: " + http.errorToString(httpResponseCode));
+  }
 
   http.end();
 }
