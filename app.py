@@ -46,7 +46,7 @@ def index():
                     var temperature = document.getElementById('temperature').value;
                     var humidity = document.getElementById('humidity').value;
                     
-                    fetch('/sensor-data', {
+                    fetch('/data', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json'
